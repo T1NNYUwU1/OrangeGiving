@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
+const { v4: uuidv4 } = require('uuid'); // Import UUID
 
 const projectSchema = new mongoose.Schema({
+  project_id: { 
+    type: String, 
+    default: uuidv4, // Generate unique projectId 
+    unique: true // Ensure projectId is unique
+  },
   title: {
     type: String,
     required: true
