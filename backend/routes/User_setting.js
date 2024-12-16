@@ -225,34 +225,37 @@ router.post('/verify-reset-otp', verifyToken, async (req, res) => {
 // Reset Password with OTP
 router.post('/reset-password', verifyToken, async (req, res) => {
   try {
-    const { token, newPassword, confirmPassword } = req.body;
+    const { newPassword, confirmPassword } = req.body;
 
-    if (!token || !newPassword || !confirmPassword) {
-      return res.status(400).json({ message: 'All fields are required' });
+    // ตรวจสอบว่าข้อมูลถูกส่งมาครบ
+    if (!newPassword || !confirmPassword) {
+      return res.status(400).json({ message: 'Both newPassword and confirmPassword are required.' });
     }
 
+    // ตรวจสอบว่า newPassword และ confirmPassword เหมือนกัน
     if (newPassword !== confirmPassword) {
       return res.status(400).json({ message: 'Passwords do not match.' });
     }
 
-    // ตรวจสอบ Token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+    // ดึงข้อมูลผู้ใช้จาก Token ที่ถูกตรวจสอบแล้วใน Middleware verifyToken
+    const userId = req.user.id; // verifyToken ทำให้มี req.user.id ใช้งานได้
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
 
-    // เปลี่ยนรหัสผ่านใหม่
+    // แฮชรหัสผ่านใหม่
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
 
+    // บันทึกรหัสผ่านใหม่
     await user.save();
 
     res.status(200).json({ message: 'Password reset successfully. You can now log in.' });
   } catch (error) {
     console.error('Error resetting password:', error.message);
-    res.status(500).json({ message: 'Invalid or expired token.' });
+    res.status(500).json({ message: 'An error occurred while resetting the password.' });
   }
 });
 
