@@ -1,4 +1,13 @@
 /* Footer Container */
+/* Reset global margins and paddings */
+
+
+body {
+  width: 100%;
+  overflow-x: hidden; /* Prevents horizontal scroll */
+  margin: 0;
+  padding: 0;
+}
 .footer {
     background-color: #333333;
     color: #ffffff;
@@ -8,7 +17,6 @@
     flex-wrap: wrap;
     font-family: Arial, sans-serif;
   }
-  
   .footer-section {
     flex: 1;
     margin-right: 1.5rem;
