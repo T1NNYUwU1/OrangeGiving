@@ -169,9 +169,6 @@ router.post('/forgot-password', async (req, res) => {
 
     await user.save();
 
-    // สร้าง Token สำหรับการรีเซ็ตรหัสผ่าน (หมดอายุ 10 นาที)
-    const token = jwt.sign({ id: user._id, email: user.email, purpose: 'reset-password and verify-reset-otp'},process.env.JWT_SECRET,{ expiresIn: '10m' });
-
     // ส่ง OTP ผ่านอีเมล
     await sendMail(
       email,
@@ -182,7 +179,6 @@ router.post('/forgot-password', async (req, res) => {
 
     res.status(200).json({
       message: 'Password reset OTP sent to your email',
-      token, // ส่ง JWT Token กลับไปให้ผู้ใช้
     });
   } catch (error) {
     console.error('Error during forgot-password:', error.message);
@@ -190,19 +186,21 @@ router.post('/forgot-password', async (req, res) => {
   }
 });
 
-router.post('/verify-reset-otp', verifyToken, async (req, res) => {
+router.post('/verify-reset-otp', async (req, res) => {
   try {
-    const { otp } = req.body;
+    const { email, otp } = req.body;
 
-    if (!otp) {
-      return res.status(400).json({ message: 'OTP is required' });
+    if (!email || !otp) {
+      return res.status(400).json({ message: 'Email and OTP are required.' });
     }
 
-    // ดึงข้อมูลผู้ใช้จาก Token
-    const userId = req.user.id;
-    const user = await User.findById(userId);
+    const user = await User.findOne({
+      email,
+      resetPasswordOTP: otp,
+      resetPasswordOTPExpires: { $gt: Date.now() }, // ตรวจสอบว่า OTP ยังไม่หมดอายุ
+    });
 
-    if (!user || user.resetPasswordOTP !== otp || user.resetPasswordOTPExpires < Date.now()) {
+    if (!user) {
       return res.status(400).json({ message: 'Invalid or expired OTP.' });
     }
 
@@ -219,12 +217,12 @@ router.post('/verify-reset-otp', verifyToken, async (req, res) => {
   }
 });
 
-router.post('/reset-password', verifyToken, async (req, res) => {
+router.post('/reset-password', async (req, res) => {
   try {
-    const { newPassword, confirmPassword } = req.body;
+    const { email, newPassword, confirmPassword } = req.body;
 
     // ตรวจสอบว่าข้อมูลถูกส่งมาครบ
-    if (!newPassword || !confirmPassword) {
+    if ( !email || !newPassword || !confirmPassword) {
       return res.status(400).json({ message: 'Both newPassword and confirmPassword are required.' });
     }
 
@@ -233,10 +231,7 @@ router.post('/reset-password', verifyToken, async (req, res) => {
       return res.status(400).json({ message: 'Passwords do not match.' });
     }
 
-    // ดึงข้อมูลผู้ใช้จาก Token ที่ถูกตรวจสอบแล้วใน Middleware verifyToken
-    const userId = req.user.id; // verifyToken ทำให้มี req.user.id ใช้งานได้
-    const user = await User.findById(userId);
-
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
