@@ -9,6 +9,7 @@ import LoginForm from "./components/LoginForm";
 import ProjectPage from "./components/ProjectPage.js";
 import ProjectSearch from "./components/ProjectSeach.jsx";
 import VerifyEmail from "./components/VerifyEmail";
+import ProfilePage from "./components/ProfilePage.js";
 function App() {
   return (
     <AuthProvider>
@@ -22,6 +23,7 @@ function App() {
               <Route path="/search" element={<ProjectSearch />} />
               <Route path="/project" element={<ProjectPage />} />
               <Route path="/signup" element={<CreateAccount />} />
+              <Route path="/profile" element={<ProfilePage />} />
               <Route path="/create-account/verify-email" element={<VerifyEmail />} />
             </Routes>
           </main>
