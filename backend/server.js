@@ -5,6 +5,8 @@ const userRoutes = require('./routes/User_setting');
 const donationRoutes = require('./routes/Donation_setting');
 const projectRoutes = require('./routes/Project_setting');
 const path = require('path');
+const cors = require('cors');
+
 
 // Load environment variables
 dotenv.config();
@@ -22,6 +24,13 @@ const app = express();
 
 // Connect to MongoDB
 connectDB();
+
+// CORS Middleware
+app.use(cors({
+    origin: 'http://localhost:3000', // อนุญาตเฉพาะ frontend ที่อยู่ port 3000
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true // อนุญาตให้ส่ง cookies หรือ headers ที่เกี่ยวกับการยืนยันตัวตน
+}));
 
 // Static files
 app.use("/images", express.static(path.join(__dirname, "../public")));

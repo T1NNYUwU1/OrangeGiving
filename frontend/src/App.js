@@ -4,6 +4,7 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import HomePage from "./components/HomePage";
 import LoginForm from "./components/LoginForm";
+import ProjectSearch from "./components/ProjectSearch";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Routes>
             <Route path="/" element={<LoginForm />} />
             <Route path="/home" element={<HomePage />} />
+            <Route path="/search" element={<ProjectSearch />} />
           </Routes>
         </main>
         <Footer />
