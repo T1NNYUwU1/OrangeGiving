@@ -189,10 +189,12 @@ router.post('/verify-reset-otp', async (req, res) => {
   try {
     const { email, otp } = req.body;
 
+    // ตรวจสอบว่าข้อมูลถูกส่งมาครบ
     if (!email || !otp) {
       return res.status(400).json({ message: 'Email and OTP are required.' });
     }
 
+    // ค้นหาผู้ใช้จาก email และ OTP ในฐานข้อมูล
     const user = await User.findOne({
       email,
       resetPasswordOTP: otp,
@@ -203,13 +205,13 @@ router.post('/verify-reset-otp', async (req, res) => {
       return res.status(400).json({ message: 'Invalid or expired OTP.' });
     }
 
-    // ล้าง OTP หลังยืนยันสำเร็จ
+    // ล้าง OTP หลังจากยืนยันสำเร็จ
     user.resetPasswordOTP = null;
     user.resetPasswordOTPExpires = null;
 
     await user.save();
 
-    res.status(200).json({ message: 'OTP verified successfully.' });
+    res.status(200).json({ message: 'OTP verified successfully. You may now reset your password.' });
   } catch (error) {
     console.error('Error verifying OTP:', error.message);
     res.status(500).json({ message: 'Server error' });
@@ -220,16 +222,17 @@ router.post('/reset-password', async (req, res) => {
   try {
     const { email, newPassword, confirmPassword } = req.body;
 
-    // ตรวจสอบว่าข้อมูลถูกส่งมาครบ
-    if ( !email || !newPassword || !confirmPassword) {
-      return res.status(400).json({ message: 'Both newPassword and confirmPassword are required.' });
+    // ตรวจสอบข้อมูลที่จำเป็น
+    if (!email || !newPassword || !confirmPassword) {
+      return res.status(400).json({ message: 'Email, newPassword, and confirmPassword are required.' });
     }
 
-    // ตรวจสอบว่า newPassword และ confirmPassword เหมือนกัน
+    // ตรวจสอบว่ารหัสผ่านตรงกันหรือไม่
     if (newPassword !== confirmPassword) {
       return res.status(400).json({ message: 'Passwords do not match.' });
     }
 
+    // ค้นหาผู้ใช้จาก email
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
@@ -238,18 +241,16 @@ router.post('/reset-password', async (req, res) => {
     // แฮชรหัสผ่านใหม่
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
-
-    // บันทึกรหัสผ่านใหม่
     await user.save();
 
-    // ส่งอีเมลแจ้งเตือนว่ารหัสผ่านถูกเปลี่ยนแล้ว
+    // แจ้งเตือนทางอีเมลว่ารหัสผ่านเปลี่ยนสำเร็จ
     await sendMail(
       user.email,
       'Password Reset Successful - OrangeGive',
       `<p>Your password has been successfully reset. If you did not initiate this request, please contact our support immediately.</p>`
     );
 
-    res.status(200).json({ message: 'Password reset successfully. Already sent reset password email' });
+    res.status(200).json({ message: 'Password reset successfully and email notification sent.' });
   } catch (error) {
     console.error('Error resetting password:', error.message);
     res.status(500).json({ message: 'An error occurred while resetting the password.' });
