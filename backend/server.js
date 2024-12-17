@@ -24,7 +24,7 @@ const app = express();
 connectDB();
 
 // Static files
-app.use("/images", express.static(path.join(__dirname, "../frontend/public")));
+app.use("/images", express.static(path.join(__dirname, "../public")));
 
 // Middleware
 app.use(express.json()); // Parse incoming JSON requests

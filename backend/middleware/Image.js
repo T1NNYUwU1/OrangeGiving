@@ -5,7 +5,7 @@ const path = require('path');
 // Storage configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../frontend/public/images')); // แก้ path ให้ถูกต้อง
+    cb(null, path.join(__dirname, '../public/images')); // แก้ path ให้ถูกต้อง
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname); // ดึงนามสกุลไฟล์
