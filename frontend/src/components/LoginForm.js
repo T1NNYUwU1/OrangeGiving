@@ -1,6 +1,6 @@
-import axios from "axios"; // Import Axios
+import axios from "axios";
 import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
 import "./LoginForm.css";
 
@@ -19,10 +19,10 @@ function LoginForm() {
         password,
       });
 
-      // เก็บ Token ใน localStorage
+      // Save Token
       localStorage.setItem("token", response.data.token);
 
-      // อัปเดต context และ Redirect ไปยัง Home
+      // Update context and Redirect
       login();
       navigate("/home");
     } catch (err) {
@@ -32,30 +32,41 @@ function LoginForm() {
   };
 
   return (
-    <div className="login-form">
-      <h3 className="form-title">Get start</h3>
-      <div className="form-content">
-        <h4>Login</h4>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button type="submit" className="submit-btn">
-            Login
-          </button>
-        </form>
+    <div className="login-container">
+      <div className="login-form">
+        <h3 className="form-title">Get start</h3>
+        <div className="form-content">
+          <h4>Login</h4>
+          <form onSubmit={handleSubmit}>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button type="submit" className="submit-btn">
+              Login
+            </button>
+          </form>
+          <p className="register-link">
+            Don’t have an account?{" "}
+            <Link to="/signup" className="create-account-link">
+              Create account
+            </Link>
+          </p>
+        </div>
       </div>
+      <footer className="footer">
+        <p>OrangeGive &copy; 2024. All Rights Reserved</p>
+      </footer>
     </div>
   );
 }

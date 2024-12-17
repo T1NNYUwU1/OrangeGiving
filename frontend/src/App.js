@@ -1,12 +1,14 @@
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { AuthProvider } from "./components/AuthContext.js";
+import CreateAccount from "./components/CreateAccount.js";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import HomePage from "./components/HomePage";
 import LoginForm from "./components/LoginForm";
 import ProjectPage from "./components/ProjectPage.js";
 import ProjectSearch from "./components/ProjectSeach.jsx";
+import VerifyEmail from "./components/VerifyEmail";
 function App() {
   return (
     <AuthProvider>
@@ -19,6 +21,8 @@ function App() {
               <Route path="/home" element={<HomePage />} />
               <Route path="/search" element={<ProjectSearch />} />
               <Route path="/project" element={<ProjectPage />} />
+              <Route path="/signup" element={<CreateAccount />} />
+              <Route path="/create-account/verify-email" element={<VerifyEmail />} />
             </Routes>
           </main>
           <Footer />
