@@ -11,33 +11,20 @@ const cors = require('cors');
 // Load environment variables
 dotenv.config();
 
-// Check and install missing dependencies
-try {
-    require.resolve('bcryptjs');
-} catch (err) {
-    console.error("bcryptjs module not found. Please install it using 'npm install bcryptjs'.");
-    process.exit(1);
-}
-
 // Initialize Express
 const app = express();
 
 // Connect to MongoDB
 connectDB();
 
-// CORS Middleware
+// Middleware
 app.use(cors({
     origin: 'http://localhost:3000', // อนุญาตเฉพาะ frontend ที่อยู่ port 3000
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true // อนุญาตให้ส่ง cookies หรือ headers ที่เกี่ยวกับการยืนยันตัวตน
 }));
-
-// Static files
 app.use("/images", express.static(path.join(__dirname, "../public")));
-
-// Middleware
 app.use(express.json()); // Parse incoming JSON requests
-app.use(express.static('public')); // Serve static files from the "public" directory
 
 // Routes
 app.use('/users', userRoutes); // Routes for users

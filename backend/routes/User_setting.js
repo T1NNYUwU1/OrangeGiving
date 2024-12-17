@@ -1,14 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
 const User = require('../models/User.js');
 const bcrypt = require('bcryptjs');
-const app = express();
 const jwt = require('jsonwebtoken');
 const verifyToken = require('../middleware/token.js');
-const crypto = require('crypto'); // ใช้สำหรับสร้าง OTP
 const sendMail = require('../utils/sendMail.js'); // ใช้ส่ง OTP
-const multer = require('multer'); // ใช้สำหรับรูปภาพ
 const upload = require('../middleware/Image.js');
 
 // Signup Route

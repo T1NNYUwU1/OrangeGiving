@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 const Donation = require('../models/Donation.js');
 const User = require('../models/User.js');

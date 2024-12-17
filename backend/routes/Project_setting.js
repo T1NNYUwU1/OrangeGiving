@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
 const Project = require('../models/Project.js');
 const verifyToken = require('../middleware/token.js')
-const multer = require('multer'); // ใช้สำหรับรูปภาพ
 const upload = require('../middleware/Image.js');
 
 // Create a new project with multiple images
