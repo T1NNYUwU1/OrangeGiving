@@ -1,0 +1,79 @@
+/* CreateAccount.css */
+.create-account-container {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .create-account-form {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+  
+  .form-title {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .create-account-form input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  .terms-label {
+    font-size: 0.9rem;
+    color: #666;
+    text-align: left;
+    margin: 10px 0;
+  }
+  
+  .terms-label input {
+    margin-right: 10px;
+  }
+  
+  .link {
+    color: #f7931e;
+    text-decoration: none;
+  }
+  
+  .link:hover {
+    text-decoration: underline;
+  }
+  
+  .submit-btn {
+    background-color: #f7931e;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .submit-btn:hover {
+    background-color: #e67e22;
+  }
+  
+  .already-account {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 10px;
+  }
+  

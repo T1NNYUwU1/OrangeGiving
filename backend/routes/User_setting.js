@@ -81,14 +81,12 @@ router.post("/verify-email", async (req, res) => {
     // Check if user exists
     const user = await User.findOne({
       email,
-      verificationOTP: otp,
-      verificationOTPExpires: { $gt: Date.now() }, // OTP ยังไม่หมดอายุ
+      verificationOTP: otp, // Compare OTP
+      verificationOTPExpires: { $gt: Date.now() }, // OTP not expired
     });
 
     if (!user) {
-      return res
-        .status(400)
-        .json({ message: "Invalid OTP or OTP has expired." });
+      return res.status(400).json({ message: "Invalid OTP or OTP has expired." });
     }
 
     // Update User Verification Status
@@ -104,6 +102,7 @@ router.post("/verify-email", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 //login
 router.post('/login', async (req, res) => {
