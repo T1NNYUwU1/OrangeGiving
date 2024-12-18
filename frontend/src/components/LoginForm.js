@@ -12,19 +12,16 @@ function LoginForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const response = await axios.post("http://localhost:5000/users/login", {
         email,
         password,
       });
 
-      // Save Token
+      // Store Token
       localStorage.setItem("token", response.data.token);
-
-      // Update context and Redirect
-      login();
-      navigate("/home");
+      login(); // Update Context
+      navigate("/home"); // Redirect to Home Page
     } catch (err) {
       console.error("Login Error:", err.response?.data?.message || "Error");
       alert("Login failed! Please check your credentials.");
@@ -32,41 +29,41 @@ function LoginForm() {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-form">
-        <h3 className="form-title">Get start</h3>
-        <div className="form-content">
-          <h4>Login</h4>
-          <form onSubmit={handleSubmit}>
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <button type="submit" className="submit-btn">
-              Login
-            </button>
-          </form>
+    <div className="login-form">
+      <h3 className="form-title">Get start</h3>
+      <div className="form-content">
+        <h4>Login</h4>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <div className="form-options">
+            <Link to="/forgot-password" className="forgot-password">
+              Forgot Password
+            </Link>
+          </div>
+          <button type="submit" className="submit-btn">
+            Login
+          </button>
           <p className="register-link">
             Don’t have an account?{" "}
-            <Link to="/signup" className="create-account-link">
-              Create account
+            <Link to="/signup" className="register-btn">
+              Create Account
             </Link>
           </p>
-        </div>
+        </form>
       </div>
-      <footer className="footer">
-        <p>OrangeGive &copy; 2024. All Rights Reserved</p>
-      </footer>
     </div>
   );
 }

@@ -3,13 +3,17 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { AuthProvider } from "./components/AuthContext.js";
 import CreateAccount from "./components/CreateAccount.js";
 import Footer from "./components/Footer";
+import ForgotPassword from "./components/ForgotPassword";
 import Header from "./components/Header";
 import HomePage from "./components/HomePage";
 import LoginForm from "./components/LoginForm";
 import ProjectPage from "./components/ProjectPage.js";
 import ProjectSearch from "./components/ProjectSeach.jsx";
+import ResetPassword from "./components/ResetPassword.js";
 import VerifyEmail from "./components/VerifyEmail";
 import ProfilePage from "./components/ProfilePage.js";
+
+
 function App() {
   return (
     <AuthProvider>
@@ -25,6 +29,8 @@ function App() {
               <Route path="/signup" element={<CreateAccount />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/create-account/verify-email" element={<VerifyEmail />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/forget-password/reset-password" element={<ResetPassword />} />
             </Routes>
           </main>
           <Footer />

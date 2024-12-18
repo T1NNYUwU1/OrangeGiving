@@ -5,16 +5,13 @@ const verifyToken = require('../middleware/token.js')
 const upload = require('../middleware/Image.js');
 
 // Create a new project with multiple images
-router.post('/create', verifyToken, upload.array('images', 10), /* อัปโหลดได้สูงสุด 10 รูป (เปลี่ยนตัวเลขได้) */ async (req, res) => {
+router.post('/create', verifyToken, upload.single('images'), async (req, res) => {
     try {
       const {
         title,
         organization,
         goal,
-        location,
-        category,
         long_description,
-        isFeatured,
       } = req.body;
 
       // ตรวจสอบว่าข้อมูลที่จำเป็นถูกส่งมาครบหรือไม่
@@ -22,15 +19,13 @@ router.post('/create', verifyToken, upload.array('images', 10), /* อัปโ�
         !title ||
         !organization?.name ||
         !goal ||
-        !location ||
-        !category ||
         !long_description
       ) {
         return res.status(400).json({ message: 'Required fields are missing' });
       }
 
       // เก็บ path ของไฟล์รูปที่อัปโหลด
-      const imagePaths = req.files.map((file) => file.path.replace(/\\/g, '/'));
+      const imagePath = req.file ? req.file.path.replace(/\\/g, '/') : null;
 
       // สร้างโปรเจกต์ใหม่
       const newProject = new Project({
@@ -38,11 +33,8 @@ router.post('/create', verifyToken, upload.array('images', 10), /* อัปโ�
         organization,
         total_donations: 0,
         goal,
-        location,
-        category,
         long_description,
-        image: imagePaths, // เก็บเป็น array ของ path รูปภาพ
-        isFeatured: isFeatured || false,
+        image: imagePath, // เก็บ path รูปเดียว
       });
 
       await newProject.save();
@@ -80,21 +72,15 @@ router.get('/:project_id', verifyToken, async (req, res) => {
 // API: Get projects with filtering, sorting, and relevant sorting
 router.get('/', async (req, res) => {
   try {
-    const { category, location, sort, isFeatured } = req.query;
-
-    // สร้าง query object
-    let query = {};
-    if (category) query.category = category; // กรองตามหมวดหมู่
-    if (location) query.location = location; // กรองตามตำแหน่งที่ตั้ง
+    const { sort } = req.query;
 
     // ตัวเลือกการ sort
     let sortOption = {};
     if (sort === 'fundsRaised') sortOption.total_donations = -1;
     else if (sort === 'closestTogoal') sortOption.goal = 1;
     else if (sort === 'newest') sortOption.createdAt = -1;
-    else if (sort === 'relevant') sortOption.isFeatured = -1; // เรียง isFeatured ก่อน
 
-    const projects = await Project.find(query).sort(sortOption);
+    const projects = await Project.find({}).sort(sortOption);
 
     res.status(200).json(projects);
   } catch (error) {
@@ -116,9 +102,6 @@ router.get('/search', async (req, res) => {
     const projects = await Project.find({
       $or: [
         { title: { $regex: query, $options: 'i' } }, // ค้นหาแบบ case-insensitive
-        { category: { $regex: query, $options: 'i' } },
-        { location: { $regex: query, $options: 'i' } }, // ค้นหาในประเภทโปรเจกต์
-        { 'organization.name': { $regex: query, $options: 'i' } }, // ค้นหาในชื่อองค์กร
       ],
     });
 

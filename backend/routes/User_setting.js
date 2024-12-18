@@ -329,4 +329,54 @@ router.get('/profile', verifyToken, async (req, res) => {
   }
 });
 
+// Update User Information
+router.put('/update-profile', verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.id; // ดึง ID จาก Token ที่ถูกตรวจสอบแล้ว
+    const {
+      first_name,
+      last_name,
+      phone_number,
+      street_address,
+      country,
+      state,
+      postal_code,
+    } = req.body;
+
+    // ค้นหาผู้ใช้ในระบบ
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // อัปเดตข้อมูลที่ส่งมา (เฉพาะที่มีค่า)
+    if (first_name) user.first_name = first_name;
+    if (last_name) user.last_name = last_name;
+    if (phone_number) user.phone_number = phone_number;
+    if (street_address) user.street_address = street_address;
+    if (country) user.country = country;
+    if (state) user.state = state;
+    if (postal_code) user.postal_code = postal_code;
+
+    // บันทึกข้อมูลใหม่ลงในฐานข้อมูล
+    await user.save();
+
+    res.status(200).json({
+      message: 'User profile updated successfully.',
+      user: {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        phone_number: user.phone_number,
+        street_address: user.street_address,
+        country: user.country,
+        state: user.state,
+        postal_code: user.postal_code,
+      },
+    });
+  } catch (error) {
+    console.error('Error updating user profile:', error.message);
+    res.status(500).json({ message: 'Server error.' });
+  }
+});
+
 module.exports = router;
