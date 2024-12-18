@@ -25,27 +25,13 @@ const projectSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  location: { 
-    type: String, 
-    enum: ['Asia', 'Europe', 'North America', 'South America', 'Africa', 'Oceania','Australia'], 
-    required: true 
-  },
-  category: { 
-    type: String, 
-    enum: ['Education', 'Health', 'Technology', 'Environment', 'Arts & Culture', 'Disaster'], 
-    required: true 
-  },
   long_description: {
     type: String,
     required: true
   },
   image: {
-    type: [String], // เก็บเป็น Array ของ Path รูปภาพ
+    type: String,
     required: true
-  },
-  isFeatured: {
-    type: Boolean,
-    default: false
   }
 },
 { timestamps: true }
