@@ -168,9 +168,6 @@ router.post('/forgot-password', async (req, res) => {
 
     await user.save();
 
-    // สร้าง Token สำหรับการรีเซ็ตรหัสผ่าน (หมดอายุ 10 นาที)
-    const token = jwt.sign({ id: user._id, email: user.email, purpose: 'reset-password and verify-reset-otp'},process.env.JWT_SECRET,{ expiresIn: '10m' });
-
     // ส่ง OTP ผ่านอีเมล
     await sendMail(
       email,
@@ -181,7 +178,6 @@ router.post('/forgot-password', async (req, res) => {
 
     res.status(200).json({
       message: 'Password reset OTP sent to your email',
-      token, // ส่ง JWT Token กลับไปให้ผู้ใช้
     });
   } catch (error) {
     console.error('Error during forgot-password:', error.message);
@@ -189,53 +185,55 @@ router.post('/forgot-password', async (req, res) => {
   }
 });
 
-router.post('/verify-reset-otp', verifyToken, async (req, res) => {
+router.post('/verify-reset-otp', async (req, res) => {
   try {
-    const { otp } = req.body;
+    const { email, otp } = req.body;
 
-    if (!otp) {
-      return res.status(400).json({ message: 'OTP is required' });
+    // ตรวจสอบว่าข้อมูลถูกส่งมาครบ
+    if (!email || !otp) {
+      return res.status(400).json({ message: 'Email and OTP are required.' });
     }
 
-    // ดึงข้อมูลผู้ใช้จาก Token
-    const userId = req.user.id;
-    const user = await User.findById(userId);
+    // ค้นหาผู้ใช้จาก email และ OTP ในฐานข้อมูล
+    const user = await User.findOne({
+      email,
+      resetPasswordOTP: otp,
+      resetPasswordOTPExpires: { $gt: Date.now() }, // ตรวจสอบว่า OTP ยังไม่หมดอายุ
+    });
 
-    if (!user || user.resetPasswordOTP !== otp || user.resetPasswordOTPExpires < Date.now()) {
+    if (!user) {
       return res.status(400).json({ message: 'Invalid or expired OTP.' });
     }
 
-    // ล้าง OTP หลังยืนยันสำเร็จ
+    // ล้าง OTP หลังจากยืนยันสำเร็จ
     user.resetPasswordOTP = null;
     user.resetPasswordOTPExpires = null;
 
     await user.save();
 
-    res.status(200).json({ message: 'OTP verified successfully.' });
+    res.status(200).json({ message: 'OTP verified successfully. You may now reset your password.' });
   } catch (error) {
     console.error('Error verifying OTP:', error.message);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-router.post('/reset-password', verifyToken, async (req, res) => {
+router.post('/reset-password', async (req, res) => {
   try {
-    const { newPassword, confirmPassword } = req.body;
+    const { email, newPassword, confirmPassword } = req.body;
 
-    // ตรวจสอบว่าข้อมูลถูกส่งมาครบ
-    if (!newPassword || !confirmPassword) {
-      return res.status(400).json({ message: 'Both newPassword and confirmPassword are required.' });
+    // ตรวจสอบข้อมูลที่จำเป็น
+    if (!email || !newPassword || !confirmPassword) {
+      return res.status(400).json({ message: 'Email, newPassword, and confirmPassword are required.' });
     }
 
-    // ตรวจสอบว่า newPassword และ confirmPassword เหมือนกัน
+    // ตรวจสอบว่ารหัสผ่านตรงกันหรือไม่
     if (newPassword !== confirmPassword) {
       return res.status(400).json({ message: 'Passwords do not match.' });
     }
 
-    // ดึงข้อมูลผู้ใช้จาก Token ที่ถูกตรวจสอบแล้วใน Middleware verifyToken
-    const userId = req.user.id; // verifyToken ทำให้มี req.user.id ใช้งานได้
-    const user = await User.findById(userId);
-
+    // ค้นหาผู้ใช้จาก email
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
@@ -243,18 +241,16 @@ router.post('/reset-password', verifyToken, async (req, res) => {
     // แฮชรหัสผ่านใหม่
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
-
-    // บันทึกรหัสผ่านใหม่
     await user.save();
 
-    // ส่งอีเมลแจ้งเตือนว่ารหัสผ่านถูกเปลี่ยนแล้ว
+    // แจ้งเตือนทางอีเมลว่ารหัสผ่านเปลี่ยนสำเร็จ
     await sendMail(
       user.email,
       'Password Reset Successful - OrangeGive',
       `<p>Your password has been successfully reset. If you did not initiate this request, please contact our support immediately.</p>`
     );
 
-    res.status(200).json({ message: 'Password reset successfully. Already sent reset password email' });
+    res.status(200).json({ message: 'Password reset successfully and email notification sent.' });
   } catch (error) {
     console.error('Error resetting password:', error.message);
     res.status(500).json({ message: 'An error occurred while resetting the password.' });
@@ -329,6 +325,56 @@ router.get('/profile', verifyToken, async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching user profile:', error.message);
+    res.status(500).json({ message: 'Server error.' });
+  }
+});
+
+// Update User Information
+router.put('/update-profile', verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.id; // ดึง ID จาก Token ที่ถูกตรวจสอบแล้ว
+    const {
+      first_name,
+      last_name,
+      phone_number,
+      street_address,
+      country,
+      state,
+      postal_code,
+    } = req.body;
+
+    // ค้นหาผู้ใช้ในระบบ
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // อัปเดตข้อมูลที่ส่งมา (เฉพาะที่มีค่า)
+    if (first_name) user.first_name = first_name;
+    if (last_name) user.last_name = last_name;
+    if (phone_number) user.phone_number = phone_number;
+    if (street_address) user.street_address = street_address;
+    if (country) user.country = country;
+    if (state) user.state = state;
+    if (postal_code) user.postal_code = postal_code;
+
+    // บันทึกข้อมูลใหม่ลงในฐานข้อมูล
+    await user.save();
+
+    res.status(200).json({
+      message: 'User profile updated successfully.',
+      user: {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        phone_number: user.phone_number,
+        street_address: user.street_address,
+        country: user.country,
+        state: user.state,
+        postal_code: user.postal_code,
+      },
+    });
+  } catch (error) {
+    console.error('Error updating user profile:', error.message);
     res.status(500).json({ message: 'Server error.' });
   }
 });

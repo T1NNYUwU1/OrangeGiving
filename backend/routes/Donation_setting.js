@@ -70,7 +70,7 @@ router.get('/project/:project_id', verifyToken, async (req, res) => {
     try {
       const { project_id } = req.params;
   
-      const donations = await Donation.find({ project_id }).populate('user_id', 'first_name last_name email');
+      const donations = await Donation.find({ project_id }).populate('user_id', 'first_name', 'last_name', 'email');
       if (!donations || donations.length === 0) {
         return res.status(404).json({ message: 'No donations found for this project.' });
       }
