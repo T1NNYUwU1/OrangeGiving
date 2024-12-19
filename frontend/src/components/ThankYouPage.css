@@ -1,0 +1,41 @@
+/* Thank You Page Styling */
+.thank-you-page {
+    text-align: center;
+    padding: 2rem;
+    font-family: Arial, sans-serif;
+  }
+  
+  .thank-you-page h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #ff9900;
+  }
+  
+  .thank-you-page p {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+  
+  .thank-you-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .back-home-btn,
+  .view-projects-btn {
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    color: white;
+    border-radius: 5px;
+  }
+  
+  .back-home-btn {
+    background-color: #666;
+  }
+  
+  .view-projects-btn {
+    background-color: #ff9900;
+  }
+  

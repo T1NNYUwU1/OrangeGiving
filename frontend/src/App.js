@@ -12,7 +12,8 @@ import ProfilePage from "./components/ProfilePage.js";
 import ProjectPage from "./components/ProjectPage.js";
 import ProjectSearch from "./components/ProjectSeach.jsx";
 import ResetPassword from "./components/ResetPassword.js";
-import VerifyEmail from "./components/VerifyEmail";
+import VerifyEmail from "./components/VerifyEmail.js";
+import ThankYou from './components/ThankYouPage.js';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/forget-password/reset-password" element={<ResetPassword />} />
               <Route path="/home/profile/account-setting" element={<AccountSetting />} />
+              <Route path="/thank-you" element={<ThankYou />} />
             </Routes>
           </main>
           <Footer />
