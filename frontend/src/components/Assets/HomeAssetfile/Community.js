@@ -8,8 +8,8 @@ const Community = () => {
         <h1 className="brand">OrangeGive</h1>
         <h2 className="headline">Join our community</h2>
         <div className="icons">
-          <span className="icon">📘</span>
-          <span className="icon">📸</span>
+          <a href="https://www.facebook.com/share/p/18QqNowtvs/" target="_blank" rel ="noopener noreferrer"><span className="icon">📘</span></a>
+          <a href="https://www.instagram.com/0rangegive/" target="_blank" rel="noopener noreferrer"><span className="icon">📸</span></a>
           <span className="icon">❌</span>
           <span className="icon">💼</span>
           <span className="icon">🎮</span>
