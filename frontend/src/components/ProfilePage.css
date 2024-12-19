@@ -1,51 +1,114 @@
-.header h1 {
-  font-size: 1.8rem;
-}
-
-.header nav button {
-  background: white;
-  color: #ffa500;
-  border: none;
-  padding: 8px 15px;
-  margin-left: 10px;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.header nav button:hover {
-  background-color: #e69500;
-  color: white;
-}
-
-/* Donation History */
-.donation-history {
-  margin: 30px auto;
-  max-width: 900px;
-}
-
-.donation-history table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.donation-history th,
-.donation-history td {
-  padding: 10px;
-  border: 1px solid #e0e0e0;
-  text-align: center;
-}
-
-.donation-history th {
-  background-color: #ffa500;
-  color: white;
-}
-
-.donation-history td {
+.account-page {
+  padding: 20px;
   background-color: #f9f9f9;
 }
 
-.donation-history tr:nth-child(even) td {
-  background-color: #f2f2f2;
+/* Profile Section */
+.profile-section {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
 }
 
+.profile-card {
+  flex: 1;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
 
+.profile-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid orange;
+  margin-bottom: 10px;
+}
+
+.profile-name {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.profile-actions .btn {
+  display: inline-block;
+  padding: 10px 15px;
+  margin: 5px;
+  border: none;
+  border-radius: 20px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.setting-btn {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.logout-btn {
+  background-color: orange;
+  color: #fff;
+}
+
+.address-card {
+  flex: 1;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.address-title {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Donation History Section */
+.donation-history {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.donation-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.donation-table th,
+.donation-table td {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.donation-table th {
+  background-color: orange;
+  color: #fff;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.page-btn {
+  padding: 5px 10px;
+  border: 1px solid orange;
+  border-radius: 5px;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.page-btn.active {
+  background-color: orange;
+  color: #fff;
+}

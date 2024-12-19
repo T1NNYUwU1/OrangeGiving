@@ -21,7 +21,7 @@ function LoginForm() {
       // Store Token
       localStorage.setItem("token", response.data.token);
       login(); // Update Context
-      navigate("/home"); // Redirect to Home Page
+      navigate("/"); // Redirect to Home Page
     } catch (err) {
       console.error("Login Error:", err.response?.data?.message || "Error");
       alert("Login failed! Please check your credentials.");
