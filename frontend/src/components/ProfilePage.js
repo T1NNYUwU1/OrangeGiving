@@ -1,107 +1,116 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // Navigation
-import "./ProfilePage.css";
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./AccountPage.css";
+import { AuthContext } from "./AuthContext";
 
 const ProfilePage = () => {
-  const [userData, setUserData] = useState({});
-  const [donations, setDonations] = useState([]);
+  const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [userData, setUserData] = useState({});
+  const [donationHistory, setDonationHistory] = useState([]);
 
-  // Fetch user profile
+  // Fetch user data and donation history
   useEffect(() => {
-    const fetchProfileData = async () => {
+    const fetchData = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5000/users/profile", {
+        if (!token) {
+          alert("Unauthorized. Please log in again.");
+          navigate("/login");
+          return;
+        }
+        
+        // Fetch user data
+        const userResponse = await axios.get("http://localhost:5000/users/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setUserData(response.data.user);
+        setUserData(userResponse.data.user);
+
+        // Fetch donation history
+        const historyResponse = await axios.get("http://localhost:5000/users/donation-history", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setDonationHistory(historyResponse.data.history);
       } catch (error) {
-        console.error("Error fetching profile data:", error.message);
+        console.error("Error fetching data:", error.response?.data.message || error.message);
+        alert("Failed to load account data.");
       }
     };
 
-    fetchProfileData();
-  }, []);
-
-  // Fetch donation history
-  useEffect(() => {
-    const fetchDonations = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`http://localhost:5000/donation/user/${userData._id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setDonations(response.data);
-      } catch (error) {
-        console.error("Error fetching donations:", error.message);
-      }
-    };
-
-    if (userData._id) fetchDonations();
-  }, [userData._id]);
+    fetchData();
+  }, [navigate]);
 
   const handleLogout = () => {
+    logout();
     localStorage.removeItem("token");
     navigate("/login");
   };
 
   return (
-    <>
-
-      {/* Main Content */}
-      <div className="profile-layout">
+    <div className="account-page">
+      {/* Profile Section */}
+      <section className="profile-section">
         <div className="profile-card">
-          {/* Profile Info */}
-          <div className="profile-info">
-            <img src={userData.image } alt="Profile" className="profile-pic" />
-            <div className="user-details">
-              <h2>{userData.first_name}</h2>
-              <div className="profile-buttons">
-                <button className="btn" onClick={() => navigate("/update-profile")}>⚙️ Update Profile</button>
-                <button className="btn logout-btn" onClick={handleLogout}>🔒 Log-out</button>
-              </div>
-            </div>
-          </div>
-
-          {/* Billing Information */}
-          <div className="billing-info">
-            <h3>BILLING ADDRESS</h3>
-            <p><strong>{userData.first_name} {userData.last_name}</strong></p>
-            <p>{userData.street_address}</p>
-            <p>{userData.email}</p>
-            <p>{userData.phone_number}</p>
+          <img
+            src={userData.profileImage || "https://via.placeholder.com/120"}
+            alt="User"
+            className="profile-img"
+          />
+          <h2 className="profile-name">{userData.first_name} {userData.last_name}</h2>
+          <div className="profile-actions">
+            <button
+              className="btn setting-btn"
+              onClick={() => navigate("/home/account-page/account-setting")}
+            >
+              ⚙️ Setting
+            </button>
+            <button className="btn logout-btn" onClick={handleLogout}>
+              Log-out
+            </button>
           </div>
         </div>
-      </div>
+        <div className="address-card">
+          <h4 className="address-title">Billing Address</h4>
+          <p>
+            <strong>{userData.first_name} {userData.last_name}</strong>
+          </p>
+          <p>{userData.street_address}, {userData.state}, {userData.country} {userData.postal_code}</p>
+          <p>{userData.email}</p>
+          <p>{userData.phone_number}</p>
+        </div>
+      </section>
 
-      {/* Donation History */}
-      <div className="donation-history">
+      {/* Donation History Section */}
+      <section className="donation-history">
         <h3>Donation History</h3>
-        <table>
+        <table className="donation-table">
           <thead>
             <tr>
-              <th>Donation ID</th>
-              <th>Project ID</th>
-              <th>Date</th>
-              <th>Total</th>
+              <th>DONATION ID</th>
+              <th>PROJECT ID</th>
+              <th>DATE</th>
+              <th>TOTAL</th>
             </tr>
           </thead>
           <tbody>
-            {donations.map((donation) => (
-              <tr key={donation._id}>
-                <td>{donation.donation_id}</td>
-                <td>{donation.project_id?.title || "Unknown Project"}</td>
+            {donationHistory.map((donation, index) => (
+              <tr key={index}>
+                <td>{donation.donationId}</td>
+                <td>{donation.projectId}</td>
                 <td>{new Date(donation.date).toLocaleDateString()}</td>
-                <td>${donation.amount.toFixed(2)}</td>
+                <td><strong>${donation.total.toFixed(2)}</strong></td>
               </tr>
             ))}
           </tbody>
         </table>
-      </div>
-
-    </>
+        <div className="pagination">
+          <button className="page-btn active">1</button>
+          <button className="page-btn">2</button>
+          <button className="page-btn">3</button>
+        </div>
+      </section>
+    </div>
   );
 };
 

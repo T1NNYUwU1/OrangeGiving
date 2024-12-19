@@ -7,11 +7,11 @@ import ForgotPassword from "./components/ForgotPassword";
 import Header from "./components/Header";
 import HomePage from "./components/HomePage";
 import LoginForm from "./components/LoginForm";
+import ProfilePage from "./components/ProfilePage.js";
 import ProjectPage from "./components/ProjectPage.js";
 import ProjectSearch from "./components/ProjectSeach.jsx";
 import ResetPassword from "./components/ResetPassword.js";
 import VerifyEmail from "./components/VerifyEmail";
-import ProfilePage from "./components/ProfilePage.js";
 
 
 function App() {
@@ -23,7 +23,7 @@ function App() {
           <main className="main-content">
             <Routes>
               <Route path="/login" element={<LoginForm />} />
-              <Route path="/home" element={<HomePage />} />
+              <Route path="/" element={<HomePage />} />
               <Route path="/search" element={<ProjectSearch />} />
               <Route path="/project" element={<ProjectPage />} />
               <Route path="/signup" element={<CreateAccount />} />
