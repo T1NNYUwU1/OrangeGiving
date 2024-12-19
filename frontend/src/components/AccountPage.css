@@ -1,0 +1,88 @@
+/* Global Reset */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Profile Section */
+  .profile-section {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+  }
+  
+  .profile-card, .address-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 45%;
+  }
+  
+  .profile-img {
+    width: 120px;
+    border-radius: 50%;
+  }
+  
+  .profile-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .btn {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .setting-btn {
+    background-color: #ddd;
+  }
+  
+  .logout-btn {
+    background-color: #f7931e;
+    color: white;
+  }
+  
+  /* Donation History */
+  .donation-history {
+    padding: 20px;
+  }
+  
+  .donation-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .donation-table th, .donation-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .donation-table th {
+    background-color: #f7931e;
+    color: white;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 20px;
+  }
+  
+  .page-btn {
+    padding: 5px 10px;
+    border: none;
+    background-color: #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .page-btn.active {
+    background-color: #f7931e;
+    color: white;
+  }
+  

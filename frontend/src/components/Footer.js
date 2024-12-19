@@ -1,6 +1,15 @@
 import React from "react";
-import "./Footer.css"; // Import Footer-specific styles
-
+import img1 from "./Assets/1.jpg";
+import img2 from "./Assets/2.jpg";
+import img3 from "./Assets/3.jpg";
+import img4 from "./Assets/4.jpg";
+import img5 from "./Assets/5.jpg";
+import img6 from "./Assets/6.jpg";
+import DCV from "./Assets/dcv.jpg";
+import MC from "./Assets/MasterCard.png";
+import PP from "./Assets/pp.png";
+import VS from "./Assets/vs.png";
+import "./Footer.css";
 function Footer() {
   return (
     <footer className="footer">
@@ -47,21 +56,21 @@ function Footer() {
       <div className="footer-section instagram">
         <h5>Instagram</h5>
         <div className="footer-images">
-          <img src="https://via.placeholder.com/50" alt="1" />
-          <img src="https://via.placeholder.com/50" alt="2" />
-          <img src="https://via.placeholder.com/50" alt="3" />
-          <img src="https://via.placeholder.com/50" alt="4" />
-          <img src="https://via.placeholder.com/50" alt="5" />
-          <img src="https://via.placeholder.com/50" alt="6" />
+          <img src={img1} alt="1" />
+          <img src={img2} alt="2" />
+          <img src={img3} alt="3" />
+          <img src={img4} alt="4" />
+          <img src={img5} alt="5" />
+          <img src={img6} alt="6" />
         </div>
       </div>
       <div className="footer-bottom">
         <p>OrangeGive © 2024. All Rights Reserved</p>
         <div className="payment-icons">
-          <img src="https://via.placeholder.com/50x25" alt="PromptPay" />
-          <img src="https://via.placeholder.com/50x25" alt="VISA" />
-          <img src="https://via.placeholder.com/50x25" alt="Discover" />
-          <img src="https://via.placeholder.com/50x25" alt="Mastercard" />
+          <img src={PP} alt="PromptPay" />
+          <img src={VS} alt="VISA" />
+          <img src={DCV} alt="Discover" />
+          <img src={MC} alt="Mastercard" />
           <span className="secure-payment">🔒 Secure Payment</span>
         </div>
       </div>

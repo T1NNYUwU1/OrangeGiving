@@ -4,7 +4,7 @@ import { AuthContext } from "./AuthContext";
 import "./Header.css";
 
 function Header() {
-  const { isLoggedIn, logout } = useContext(AuthContext);
+  const { isLoggedIn} = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -18,13 +18,13 @@ function Header() {
 
   return (
     <header className="header">
-      <div className="logo" onClick={() => handleNavigation("/")}>
+      <div className="logo" onClick={() => handleNavigation("/home")}>
         <span className="orange-text">Orange</span>Give
       </div>
       <nav className="nav-buttons">
         <button
-          className={`nav-btn ${isActive("/home")}`}
-          onClick={() => handleNavigation("/home")}
+          className={`nav-btn ${isActive("/")}`}
+          onClick={() => handleNavigation("/")}
         >
           Home
         </button>
@@ -38,14 +38,17 @@ function Header() {
 
       {isLoggedIn ? (
         <div className="header-icons">
+          <input
+            type="text"
+            placeholder="Search by keyword"
+            className="search-input"
+          />
           <button className="icon-btn">🔍</button>
           <button className="icon-btn">🤝</button>
-          <button className="icon-btn" onClick={logout}>
-            Logout
-          </button>
+          <button className="icon-btn" onClick={() => handleNavigation("/home/account-page")}>👤</button>
         </div>
       ) : (
-        <button className="login-btn" onClick={() => handleNavigation("/")}>
+        <button className="login-btn" onClick={() => handleNavigation("/login")}>
           Log in
         </button>
       )}
@@ -54,3 +57,4 @@ function Header() {
 }
 
 export default Header;
+
