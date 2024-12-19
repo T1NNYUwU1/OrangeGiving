@@ -258,25 +258,35 @@ router.post('/reset-password', async (req, res) => {
 });
 
 // Delete Profile Image
-router.delete('/profile-image', verifyToken, async (req, res) => {
+router.put('/reset-profile-picture', verifyToken, async (req, res) => {
   try {
-      const userId = req.user.id;
+    const userId = req.user.id;
 
-      const user = await User.findById(userId);
-      if (!user) {
-          return res.status(404).json({ message: 'User not found.' });
-      }
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
 
-      // รีเซ็ตเป็นรูปภาพ default
-      user.image = 'default_profile.png';
-      await user.save();
+    // Reset the profile picture to default
+    user.image = '/images/default_profile.png';
+    await user.save();
 
-      res.status(200).json({ message: 'Profile image removed and set to default.', image: user.image });
+    res.status(200).json({
+      message: 'Profile picture reset to default successfully.',
+      user: {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        image: user.image,
+      },
+    });
   } catch (error) {
-      console.error('Error removing profile image:', error.message);
-      res.status(500).json({ message: 'Server error.' });
+    console.error('Error resetting profile picture:', error.message);
+    res.status(500).json({ message: 'Server error.', error: error.message });
   }
 });
+
 
 // Update Profile Image
 router.put('/profile-image', verifyToken, upload.single('image'), async (req, res) => {
@@ -378,5 +388,28 @@ router.put('/update-profile', verifyToken, upload.single('image'), async (req, r
   }
 });
 
+const handleRemoveProfilePicture = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Unauthorized. Please log in again.");
+      navigate("/login");
+      return;
+    }
+
+    const response = await axios.put(
+      "http://localhost:5000/users/reset-profile-picture",
+      {}, // No body needed for this request
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    alert(response.data.message);
+    setUserData((prevData) => ({ ...prevData, profileImage: "/images/default_profile.png" }));
+  } catch (error) {
+    console.error("Error resetting profile picture:", error.response?.data || error.message);
+    alert("Failed to reset profile picture.");
+  }
+};
 
 module.exports = router;

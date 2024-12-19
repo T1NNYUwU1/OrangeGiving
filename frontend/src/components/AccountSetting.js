@@ -2,7 +2,6 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import "./AccountSetting.css";
 
-
 function AccountSetting() {
   const [userData, setUserData] = useState({});
   const [updatedData, setUpdatedData] = useState({});
@@ -10,6 +9,7 @@ function AccountSetting() {
     newPassword: "",
     confirmPassword: "",
   });
+  const defaultImage = "/images/default_profile.png";
 
   // Fetch user data on page load
   useEffect(() => {
@@ -20,16 +20,31 @@ function AccountSetting() {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUserData(response.data.user);
-        setUpdatedData(response.data.user);
       } catch (error) {
-        console.error("Error fetching user profile:", error.response?.data);
+        console.error("Error fetching user profile:", error.response?.data || error.message);
         alert("Failed to load user profile.");
       }
     };
 
     fetchUserData();
   }, []);
-
+  const handleResetProfilePicture = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.put(
+        "http://localhost:5000/users/reset-profile-picture",
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      alert(response.data.message);
+      setUserData({ ...userData, profileImage: "/images/default_profile.png" });
+    } catch (error) {
+      console.error("Error resetting profile picture:", error.response?.data);
+      alert("Failed to reset profile picture.");
+    }
+  };
   // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -118,11 +133,14 @@ function AccountSetting() {
         <h2>Account Settings</h2>
         <div className="profile-container">
           <img
-            src={`http://localhost:5000${userData.profileImage || "/images/default_profile.png"}`}
+            src={`http://localhost:5000${userData.profileImage || '/images/default_profile.png'}`}
             alt="Profile"
             className="profile-img"
           />
           <input type="file" className="change-image-btn" onChange={handleImageUpload} />
+          <button type="button" className="reset-image-btn" onClick={handleResetProfilePicture}>
+            Reset Profile Picture
+          </button>
         </div>
         <form className="account-form">
           <input

@@ -22,7 +22,7 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true // Allow cookies or headers for auth
 }));
-app.use("/images", express.static(path.join(__dirname, 'public/images'))); // Serve static files
+app.use('/images', express.static(path.join(__dirname, 'public/images'))); // Serve static files
 app.use(express.json()); // Parse incoming JSON requests
 
 // Routes
