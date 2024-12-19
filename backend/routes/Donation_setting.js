@@ -84,39 +84,6 @@ router.get('/project/:project_id', verifyToken, async (req, res) => {
     }
 });
 
-// ดูรายการบริจาคทั้งหมดของผู้ใช้คนหนึ่ง
-router.get('/user/:user_id', verifyToken, async (req, res) => {
-  try {
-      const { user_id } = req.params;
-
-      // ตรวจสอบว่า user_id เป็น ObjectId ที่ถูกต้องหรือไม่
-      if (!mongoose.Types.ObjectId.isValid(user_id)) {
-          return res.status(400).json({ message: 'Invalid user ID format.' });
-      }
-
-      // ค้นหา Donations ตาม user_id และ populate project_id ด้วย String
-      const donations = await Donation.find({ user_id })
-          .populate({
-              path: 'project_id',
-              select: 'title goal',
-              match: {}, // ค้นหาทั้งหมดไม่ใช้เงื่อนไขเพิ่มเติม
-              options: {}, // ไม่ใส่ค่าเพิ่มเติมใน options
-              localField: 'project_id', // ระบุ field ที่เชื่อมต่อใน Donation schema
-              foreignField: 'project_id', // ระบุ field ที่เชื่อมต่อใน Project schema
-              justOne: true // ดึงข้อมูลโปรเจคที่ตรงกันเพียงอันเดียว
-          });
-
-      if (!donations || donations.length === 0) {
-          return res.status(404).json({ message: 'No donations found for this user.' });
-      }
-
-      res.status(200).json(donations);
-  } catch (error) {
-      console.error('Error fetching user donations:', error.message);
-      res.status(500).json({ message: 'Server Error', error: error.message });
-  }
-});
-
 
 // Fetch project details including total donations and remaining amount
 router.get('/total/:project_id', verifyToken, async (req, res) => {
@@ -148,4 +115,32 @@ router.get('/total/:project_id', verifyToken, async (req, res) => {
   }
 });
   
+// ดูรายการบริจาคทั้งหมดของผู้ใช้คนหนึ่ง
+router.get('/donation-history', verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const donations = await Donation.find({ user_id: userId }).populate({
+      path: 'project_id',
+      select: 'title goal', // Select only the required fields from Project
+    });
+
+    if (!donations || donations.length === 0) {
+      return res.status(404).json({ message: 'No donation history found for this user.' });
+    }
+
+    res.status(200).json({ donations });
+  } catch (error) {
+    console.error('Error fetching donation history:', error.message);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+
+
+router.get('/test', (req, res) => {
+  res.send('Donation routes are working!');
+});
+
+
 module.exports = router;

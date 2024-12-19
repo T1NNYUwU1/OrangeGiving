@@ -1,5 +1,6 @@
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import AccountSetting from "./components/AccountSetting.js";
 import { AuthProvider } from "./components/AuthContext.js";
 import CreateAccount from "./components/CreateAccount.js";
 import Footer from "./components/Footer";
@@ -12,7 +13,6 @@ import ProjectPage from "./components/ProjectPage.js";
 import ProjectSearch from "./components/ProjectSeach.jsx";
 import ResetPassword from "./components/ResetPassword.js";
 import VerifyEmail from "./components/VerifyEmail";
-
 
 function App() {
   return (
@@ -31,6 +31,7 @@ function App() {
               <Route path="/create-account/verify-email" element={<VerifyEmail />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/forget-password/reset-password" element={<ResetPassword />} />
+              <Route path="/home/profile/account-setting" element={<AccountSetting />} />
             </Routes>
           </main>
           <Footer />

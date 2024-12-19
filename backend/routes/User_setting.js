@@ -6,6 +6,19 @@ const jwt = require('jsonwebtoken');
 const verifyToken = require('../middleware/token.js');
 const sendMail = require('../utils/sendMail.js'); // ใช้ส่ง OTP
 const upload = require('../middleware/Image.js');
+const Donation = require('../models/Donation');
+const multer = require('multer');
+
+// Configure multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, '../public/images')); // Ensure the path exists
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
 
 // Signup Route
 router.post("/signup", async (req, res) => {
@@ -281,58 +294,64 @@ router.delete('/profile-image', verifyToken, async (req, res) => {
 // Update Profile Image
 router.put('/profile-image', verifyToken, upload.single('image'), async (req, res) => {
   try {
-    const userId = req.user.id; // ดึง ID จาก Token
+    const userId = req.user.id;
 
-    // ตรวจสอบว่าไฟล์ถูกอัปโหลด
     if (!req.file) {
-      return res.status(400).json({ message: 'No image file uploaded.' });
+      return res.status(400).json({ message: "No image file uploaded." });
     }
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
+      return res.status(404).json({ message: "User not found." });
     }
 
-    // อัปเดตฟิลด์ image ใน User เป็น path ของไฟล์ที่อัปโหลด
+    // Update user profile image path
     user.image = `/images/${req.file.filename}`;
     await user.save();
 
     res.status(200).json({ 
-      message: 'Profile image updated successfully.', 
+      message: "Profile image updated successfully.", 
       image: user.image 
     });
   } catch (error) {
-    console.error('Error updating profile image:', error.message);
-    res.status(500).json({ message: 'Server error.' });
+    console.error("Error updating profile image:", error.message);
+    res.status(500).json({ message: "Server error.", error: error.message });
   }
 });
 
 // GET User Profile
 router.get('/profile', verifyToken, async (req, res) => {
   try {
-    const userId = req.user.id; 
-
-    // ค้นหาข้อมูล User โดยไม่รวม password
-    const user = await User.findById(userId).select('-password -resetPasswordOTP -resetPasswordOTPExpires -verificationOTP -verificationOTPExpires');
-
+    const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
 
-    res.status(200).json({ 
-      message: 'User profile fetched successfully.', 
-      user // ข้อมูล user
+    res.status(200).json({
+      user: {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        phone_number: user.phone_number,
+        street_address: user.street_address,
+        state: user.state,
+        country: user.country,
+        postal_code: user.postal_code,
+        profileImage: user.image || '/images/default_profile.png', // Return image URL or default
+      },
     });
   } catch (error) {
     console.error('Error fetching user profile:', error.message);
-    res.status(500).json({ message: 'Server error.' });
+    res.status(500).json({ message: 'Server error.', error: error.message });
   }
 });
 
+
 // Update User Information
-router.put('/update-profile', verifyToken, async (req, res) => {
+router.put('/update-profile', verifyToken, upload.single('image'), async (req, res) => {
   try {
-    const userId = req.user.id; // ดึง ID จาก Token ที่ถูกตรวจสอบแล้ว
+    const userId = req.user.id;
+
     const {
       first_name,
       last_name,
@@ -343,13 +362,13 @@ router.put('/update-profile', verifyToken, async (req, res) => {
       postal_code,
     } = req.body;
 
-    // ค้นหาผู้ใช้ในระบบ
+    // Fetch the user
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
 
-    // อัปเดตข้อมูลที่ส่งมา (เฉพาะที่มีค่า)
+    // Update text fields
     if (first_name) user.first_name = first_name;
     if (last_name) user.last_name = last_name;
     if (phone_number) user.phone_number = phone_number;
@@ -358,7 +377,11 @@ router.put('/update-profile', verifyToken, async (req, res) => {
     if (state) user.state = state;
     if (postal_code) user.postal_code = postal_code;
 
-    // บันทึกข้อมูลใหม่ลงในฐานข้อมูล
+    // Update profile image if uploaded
+    if (req.file) {
+      user.image = `/images/${req.file.filename}`;
+    }
+
     await user.save();
 
     res.status(200).json({
@@ -371,12 +394,14 @@ router.put('/update-profile', verifyToken, async (req, res) => {
         country: user.country,
         state: user.state,
         postal_code: user.postal_code,
+        image: user.image,
       },
     });
   } catch (error) {
-    console.error('Error updating user profile:', error.message);
-    res.status(500).json({ message: 'Server error.' });
+    console.error('Error updating profile:', error.message);
+    res.status(500).json({ message: 'Server error.', error: error.message });
   }
 });
+
 
 module.exports = router;
