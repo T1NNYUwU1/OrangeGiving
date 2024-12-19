@@ -1,6 +1,11 @@
 const mongoose  = require('mongoose');
+const { v4: uuidv4 } = require('uuid');
 
 const userSchema = new mongoose.Schema({
+    _id: {
+        type: String,
+        default: uuidv4,
+    },
     first_name: {
         type: String,
         required: true
@@ -43,7 +48,7 @@ const userSchema = new mongoose.Schema({
     donation_id: {
         type: Map,
         of: {
-            type: mongoose.Schema.Types.ObjectId,
+            type: String,
             ref: 'Donation'
         },
         default: {}

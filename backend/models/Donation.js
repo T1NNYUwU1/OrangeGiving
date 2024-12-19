@@ -1,29 +1,30 @@
 const mongoose = require('mongoose');
-const User = require('./User');
+const { v4: uuidv4 } = require('uuid');
 
 const donationSchema = new mongoose.Schema({
   project_id: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'Project',
-    required: true
+    required: true,
   },
   user_id: {
-    type: mongoose.Schema.Types.ObjectId, // เชื่อมกับ User Model
+    type: String,
     ref: 'User',
-    required: true
+    required: true,
   },
   donation_id: {
     type: String,
+    default: uuidv4,
+    unique: true,
     required: true,
-    unique: true
   },
   amount: {
     type: Number,
-    required: true
+    required: true,
   },
   date: {
     type: Date,
-    default: Date.now()
+    default: Date.now,
   },
 });
 

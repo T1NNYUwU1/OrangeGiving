@@ -4,22 +4,25 @@ const User = require('../models/User.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const verifyToken = require('../middleware/token.js');
-const sendMail = require('../utils/sendMail.js'); // ใช้ส่ง OTP
+const sendMail = require('../utils/sendMail.js');
 const upload = require('../middleware/Image.js');
 const Donation = require('../models/Donation');
+const Project = require('../models/Project');
+const path = require('path');
 const multer = require('multer');
 const mongoose = require('mongoose');
+const { v4: uuidv4 } = require('uuid');
 
 // Configure multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../public/images')); // Ensure the path exists
+    cb(null, path.join(__dirname, '../public/images'));
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
-
+const uploadMiddleware = multer({ storage });
 
 // Signup Route
 router.post("/signup", async (req, res) => {
@@ -36,25 +39,20 @@ router.post("/signup", async (req, res) => {
       postal_code,
     } = req.body;
 
-    // Check required fields
     if (!first_name || !last_name || !email || !phone_number || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "Email is already registered" });
     }
 
-    // Hash Password
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Generate OTP
     const otp = String(Math.floor(100000 + Math.random() * 900000));
 
-    // Save User to Database
     const user = new User({
+      _id: uuidv4(), // Use email as the unique identifier
       first_name,
       last_name,
       email,
@@ -65,12 +63,11 @@ router.post("/signup", async (req, res) => {
       state,
       postal_code,
       verificationOTP: otp,
-      verificationOTPExpires: Date.now() + 10 * 60 * 1000, // OTP expires in 10 minutes
+      verificationOTPExpires: Date.now() + 10 * 60 * 1000,
     });
 
     await user.save();
 
-    // Send OTP to User Email
     await sendMail(
       email,
       "Verify Your Email - OrangeGive",
@@ -78,9 +75,7 @@ router.post("/signup", async (req, res) => {
       <strong>This OTP will expire in 10 minutes.</strong>`
     );
 
-    res
-      .status(201)
-      .json({ message: "User registered successfully. Please verify your email." });
+    res.status(201).json({ message: "User registered successfully. Please verify your email." });
   } catch (error) {
     console.error("Error during signup:", error.message);
     res.status(500).json({ message: "Server error" });
@@ -121,44 +116,35 @@ router.post("/verify-email", async (req, res) => {
 //login
 router.post('/login', async (req, res) => {
   try {
-      const { email, password } = req.body;
+    const { email, password } = req.body;
 
-      // Find the user by email
-      const user = await User.findOne({ email });
-      if (!user) {
-          return res.status(404).json({ message: 'User not found' });
-      }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
-      // Compare the provided password with the stored hash
-      const isPasswordCorrect = await bcrypt.compare(password, user.password);
-      if (!isPasswordCorrect) {
-          return res.status(401).json({ message: 'Password is incorrect' });
-      }
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(401).json({ message: 'Password is incorrect' });
+    }
 
-      // Load the JWT_SECRET from environment variables
-      const secret = process.env.JWT_SECRET;
-      if (!secret) {
-          return res.status(500).json({ message: 'JWT Secret is not configured on the server' });
-      }
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      return res.status(500).json({ message: 'JWT Secret is not configured on the server' });
+    }
 
-      // Generate a JWT token
-      const token = jwt.sign({ id: user._id, email: user.email }, secret, { expiresIn: '24h' });
-
-      // Respond with the token
-      res.status(200).json({ token });
+    const token = jwt.sign({ id: user._id, email: user.email }, secret, { expiresIn: '24h' });
+    res.status(200).json({ token });
   } catch (err) {
-      // Handle unexpected errors
-      console.error("Error during login:", err.message);
-      res.status(500).json({ message: 'Server error' });
+    console.error("Error during login:", err.message);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
 //logout
 router.post('/logout', verifyToken, (req, res) => {
-    res.clearCookie('token');
-    res.status(200).json({ message: 'Logged out' });
-  }
-);
+  res.status(200).json({ message: 'Logged out' });
+});
 
 // Request Password Reset OTP
 router.post('/forgot-password', async (req, res) => {
@@ -363,13 +349,11 @@ router.put('/update-profile', verifyToken, upload.single('image'), async (req, r
       postal_code,
     } = req.body;
 
-    // Fetch the user
-    const user = await User.findById(userId);
+    const user = await User.findOne({ _id: userId });
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
 
-    // Update text fields
     if (first_name) user.first_name = first_name;
     if (last_name) user.last_name = last_name;
     if (phone_number) user.phone_number = phone_number;
@@ -378,7 +362,6 @@ router.put('/update-profile', verifyToken, upload.single('image'), async (req, r
     if (state) user.state = state;
     if (postal_code) user.postal_code = postal_code;
 
-    // Update profile image if uploaded
     if (req.file) {
       user.image = `/images/${req.file.filename}`;
     }
@@ -387,41 +370,11 @@ router.put('/update-profile', verifyToken, upload.single('image'), async (req, r
 
     res.status(200).json({
       message: 'User profile updated successfully.',
-      user: {
-        first_name: user.first_name,
-        last_name: user.last_name,
-        phone_number: user.phone_number,
-        street_address: user.street_address,
-        country: user.country,
-        state: user.state,
-        postal_code: user.postal_code,
-        image: user.image,
-      },
+      user,
     });
   } catch (error) {
     console.error('Error updating profile:', error.message);
-    res.status(500).json({ message: 'Server error.', error: error.message });
-  }
-});
-
-router.get('/history', verifyToken, async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    const donations = await Donation.find({ user_id: userId })
-      .populate('project_id', 'title goal');
-
-    if (!donations || donations.length === 0) {
-      return res.status(404).json({ message: 'No donations found for this user.' });
-    }
-
-    res.status(200).json({
-      message: 'Donation history fetched successfully.',
-      donations
-    });
-  } catch (error) {
-    console.error('Error fetching donation history:', error.message);
-    res.status(500).json({ message: 'Server Error', error: error.message });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
