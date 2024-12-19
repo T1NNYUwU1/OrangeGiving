@@ -155,28 +155,6 @@ router.get('/total/:project_id', verifyToken, async (req, res) => {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
 });
-  
-// ดูรายการบริจาคทั้งหมดของผู้ใช้คนหนึ่ง
-router.get('/donation-history', verifyToken, async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    const donations = await Donation.find({ user_id: userId }).populate({
-      path: 'project_id',
-      select: 'title goal', // Select only the required fields from Project
-    });
-
-    if (!donations || donations.length === 0) {
-      return res.status(404).json({ message: 'No donation history found for this user.' });
-    }
-
-    res.status(200).json({ donations });
-  } catch (error) {
-    console.error('Error fetching donation history:', error.message);
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-});
-
 
 
 router.get('/test', (req, res) => {

@@ -3,6 +3,7 @@ const router = express.Router();
 const Project = require('../models/Project.js');
 const verifyToken = require('../middleware/token.js')
 const upload = require('../middleware/Image.js');
+const mongoose = require('mongoose');
 
 // Create a new project with multiple images
 router.post('/create', verifyToken, upload.single('image'), async (req, res) => {
