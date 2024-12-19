@@ -1,8 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import "./AccountPage.css"; // Add styling as per your requirement
 import "./AccountSetting.css";
-import profileImg from "./Assets/GTRS.jpeg"; // Use a default placeholder image or user's uploaded one
 
 
 function AccountSetting() {
@@ -18,16 +16,11 @@ function AccountSetting() {
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) {
-          alert("Unauthorized. Please log in again.");
-          return;
-        }
-
         const response = await axios.get("http://localhost:5000/users/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUserData(response.data.user);
-        setUpdatedData(response.data.user); // Pre-fill the form with user data
+        setUpdatedData(response.data.user);
       } catch (error) {
         console.error("Error fetching user profile:", error.response?.data);
         alert("Failed to load user profile.");
@@ -91,6 +84,33 @@ function AccountSetting() {
     }
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.put(
+        "http://localhost:5000/users/profile-image",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      alert(response.data.message);
+      setUserData({ ...userData, profileImage: response.data.image });
+    } catch (error) {
+      console.error("Error uploading profile image:", error.response?.data);
+      alert("Failed to upload profile image.");
+    }
+  };
+
   return (
     <div className="account-page">
       {/* Account Settings Section */}
@@ -98,13 +118,12 @@ function AccountSetting() {
         <h2>Account Settings</h2>
         <div className="profile-container">
           <img
-            src={profileImg}
+            src={`http://localhost:5000${userData.profileImage || "/images/default_profile.png"}`}
             alt="Profile"
             className="profile-img"
           />
-          <input type="file" className="change-image-btn" />
+          <input type="file" className="change-image-btn" onChange={handleImageUpload} />
         </div>
-
         <form className="account-form">
           <input
             type="text"

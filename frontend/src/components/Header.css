@@ -6,6 +6,7 @@
   padding: 20px;
   background-color: #fff;
   border-bottom: 1px solid #ddd;
+  color: black;
 }
 
 .logo {
@@ -25,11 +26,11 @@
   border: 1px solid #ddd;
   border-radius: 20px;
   cursor: pointer;
+  color: black;
 }
 
 .nav-btn.active {
   background-color: #f7931e;
-  color: white;
 }
 
 .header-icons {

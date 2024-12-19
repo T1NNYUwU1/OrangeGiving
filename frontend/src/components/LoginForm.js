@@ -9,6 +9,7 @@ function LoginForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); // State to track error message
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +25,8 @@ function LoginForm() {
       navigate("/"); // Redirect to Home Page
     } catch (err) {
       console.error("Login Error:", err.response?.data?.message || "Error");
-      alert("Login failed! Please check your credentials.");
+      // Set error message instead of using alert
+      setError(err.response?.data?.message || "Invalid email or password. Please try again.");
     }
   };
 
@@ -34,6 +36,7 @@ function LoginForm() {
       <div className="form-content">
         <h4>Login</h4>
         <form onSubmit={handleSubmit}>
+          {error && <p className="error-message">{error}</p>} {/* Display error message */}
           <input
             type="email"
             placeholder="Email"

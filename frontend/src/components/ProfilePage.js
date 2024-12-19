@@ -1,8 +1,8 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./AccountPage.css";
 import { AuthContext } from "./AuthContext";
+import "./ProfilePage.css";
 
 const ProfilePage = () => {
   const { logout } = useContext(AuthContext);
@@ -20,7 +20,7 @@ const ProfilePage = () => {
           navigate("/login");
           return;
         }
-        
+
         // Fetch user data
         const userResponse = await axios.get("http://localhost:5000/users/profile", {
           headers: { Authorization: `Bearer ${token}` },
@@ -28,12 +28,17 @@ const ProfilePage = () => {
         setUserData(userResponse.data.user);
 
         // Fetch donation history
-        const historyResponse = await axios.get("http://localhost:5000/users/donation-history", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setDonationHistory(historyResponse.data.history);
+        try {
+          const historyResponse = await axios.get("http://localhost:5000/donations/donation-history", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setDonationHistory(historyResponse.data.donations);
+        } catch (error) {
+          console.error("Error fetching donation history:", error.response?.data || error.message);
+          alert("Failed to load donation history.");
+        }
       } catch (error) {
-        console.error("Error fetching data:", error.response?.data.message || error.message);
+        console.error("Global fetch error:", error.message);
         alert("Failed to load account data.");
       }
     };
@@ -53,7 +58,7 @@ const ProfilePage = () => {
       <section className="profile-section">
         <div className="profile-card">
           <img
-            src={userData.profileImage || "https://via.placeholder.com/120"}
+            src={`http://localhost:5000${userData.profileImage || "/images/default_profile.png"}`}
             alt="User"
             className="profile-img"
           />
@@ -61,7 +66,7 @@ const ProfilePage = () => {
           <div className="profile-actions">
             <button
               className="btn setting-btn"
-              onClick={() => navigate("/home/account-page/account-setting")}
+              onClick={() => navigate("/home/profile/account-setting")}
             >
               ⚙️ Setting
             </button>

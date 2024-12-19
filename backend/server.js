@@ -7,7 +7,6 @@ const projectRoutes = require('./routes/Project_setting');
 const path = require('path');
 const cors = require('cors');
 
-
 // Load environment variables
 dotenv.config();
 
@@ -19,17 +18,17 @@ connectDB();
 
 // Middleware
 app.use(cors({
-    origin: 'http://localhost:3000', // อนุญาตเฉพาะ frontend ที่อยู่ port 3000
+    origin: 'http://localhost:3000', // Allow frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true // อนุญาตให้ส่ง cookies หรือ headers ที่เกี่ยวกับการยืนยันตัวตน
+    credentials: true // Allow cookies or headers for auth
 }));
-app.use("/images", express.static(path.join(__dirname, "../public")));
+app.use("/images", express.static(path.join(__dirname, 'public/images'))); // Serve static files
 app.use(express.json()); // Parse incoming JSON requests
 
 // Routes
-app.use('/users', userRoutes); // Routes for users
-app.use('/donations', donationRoutes); // Routes for donations
-app.use('/projects', projectRoutes); // Routes for projects
+app.use('/users', userRoutes);
+app.use('/donations', donationRoutes);
+app.use('/projects', projectRoutes);
 
 // Default route for unhandled requests
 app.use((req, res, next) => {
