@@ -18,7 +18,7 @@ function Header() {
 
   return (
     <header className="header">
-      <div className="logo" onClick={() => handleNavigation("/home")}>
+      <div className="logo" onClick={() => handleNavigation("/")}>
         <span className="orange-text">Orange</span>Give
       </div>
       <nav className="nav-buttons">

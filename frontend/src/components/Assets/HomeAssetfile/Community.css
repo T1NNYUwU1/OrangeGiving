@@ -1,0 +1,101 @@
+.community {
+    position: relative;
+    width: 100%;
+    height: 100vh; /* Full viewport height */
+    background: url('./image/112.png') center/cover no-repeat; /* Replace with your background image path */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    color: white;
+  }
+  
+  .community::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* Overlay for better text contrast */
+    z-index: 1;
+  }
+  
+  .community-content {
+    position: relative;
+    z-index: 2; /* Ensure content is above the overlay */
+    text-align: center;
+  }
+  
+  .brand {
+    font-size: 2.5rem;
+    font-weight: bold;
+    padding: 5px 20px;
+    background: rgba(255, 255, 255, 0.2); /* Transparent background */
+    border: 1px solid white;
+    border-radius: 25px;
+    display: inline-block;
+    margin-bottom: 20px;
+  }
+  
+  .headline {
+    font-size: 2.8rem;
+    font-weight: 600;
+    margin: 20px 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    color : white;
+  }
+  
+  .icons {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Space between icons */
+    margin: 30px 0;
+    padding: 10px 20px;
+    background: white; /* White container for icons */
+    border-radius: 50px; /* Rounded container */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  }
+  
+  .icon {
+    font-size: 2rem; /* Icon size */
+    padding: 10px;
+    background: transparent;
+    border-radius: 50%; /* Circle shape for icons */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, background 0.3s ease;
+  }
+  
+  .icon:hover {
+    transform: scale(1.2); /* Zoom effect on hover */
+    background: orange;
+    color: white; /* Change text color on hover */
+  }
+  
+  .copyright {
+    font-size: 1.2rem;
+    margin-top: 20px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .brand {
+      font-size: 2rem;
+    }
+  
+    .headline {
+      font-size: 2rem;
+    }
+  
+    .icons .icon {
+      font-size: 1.5rem; /* Smaller icons on smaller screens */
+    }
+  
+    .copyright {
+      font-size: 1rem;
+    }
+  }
