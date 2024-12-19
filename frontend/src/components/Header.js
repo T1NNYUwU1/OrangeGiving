@@ -45,7 +45,7 @@ function Header() {
           </button>
         </div>
       ) : (
-        <button className="login-btn" onClick={() => handleNavigation("/")}>
+        <button className="login-btn" onClick={() => handleNavigation("/login")}>
           Log in
         </button>
       )}
