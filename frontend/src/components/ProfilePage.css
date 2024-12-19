@@ -1,0 +1,51 @@
+.header h1 {
+  font-size: 1.8rem;
+}
+
+.header nav button {
+  background: white;
+  color: #ffa500;
+  border: none;
+  padding: 8px 15px;
+  margin-left: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.header nav button:hover {
+  background-color: #e69500;
+  color: white;
+}
+
+/* Donation History */
+.donation-history {
+  margin: 30px auto;
+  max-width: 900px;
+}
+
+.donation-history table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.donation-history th,
+.donation-history td {
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+.donation-history th {
+  background-color: #ffa500;
+  color: white;
+}
+
+.donation-history td {
+  background-color: #f9f9f9;
+}
+
+.donation-history tr:nth-child(even) td {
+  background-color: #f2f2f2;
+}
+
+

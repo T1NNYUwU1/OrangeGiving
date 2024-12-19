@@ -13,6 +13,8 @@ import ProjectPage from "./components/ProjectPage.js";
 import ProjectSearch from "./components/ProjectSeach.jsx";
 import ResetPassword from "./components/ResetPassword.js";
 import VerifyEmail from "./components/VerifyEmail";
+import ProfilePage from "./components/ProfilePage.js";
+
 function App() {
   return (
     <AuthProvider>
@@ -22,10 +24,11 @@ function App() {
           <main className="main-content">
             <Routes>
               <Route path="/login" element={<LoginForm />} />
-              <Route path="/" element={<HomePage />} />
+              <Route path="/home" element={<HomePage />} />
               <Route path="/search" element={<ProjectSearch />} />
               <Route path="/project" element={<ProjectPage />} />
               <Route path="/signup" element={<CreateAccount />} />
+              <Route path="/profile" element={<ProfilePage />} />
               <Route path="/create-account/verify-email" element={<VerifyEmail />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/forget-password/reset-password" element={<ResetPassword />} />
