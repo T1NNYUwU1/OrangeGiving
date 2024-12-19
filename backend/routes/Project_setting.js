@@ -56,7 +56,11 @@ router.get('/:project_id', verifyToken, async (req, res) => {
   try {
     const { project_id } = req.params;
 
-    const project = await Project.findOne({ project_id });
+    if (!mongoose.Types.ObjectId.isValid(project_id)) {
+      return res.status(400).json({ message: 'Invalid project ID format.' });
+    }
+
+    const project = await Project.findById(project_id);
 
     if (!project) {
       return res.status(404).json({ message: 'Project not found' });
@@ -110,7 +114,11 @@ router.get('/search', async (req, res) => {
       return res.status(404).json({ message: 'No projects found' });
     }
 
-    res.status(200).json(projects);
+    res.status(200).json({
+      message: 'Search results fetched successfully.',
+      projects,
+    });
+    
   } catch (error) {
     console.error('Error searching projects:', error.message);
     res.status(500).json({ message: 'Server error' });

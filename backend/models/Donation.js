@@ -3,7 +3,7 @@ const User = require('./User');
 
 const donationSchema = new mongoose.Schema({
   project_id: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Project',
     required: true
   },

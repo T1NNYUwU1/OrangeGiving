@@ -6,6 +6,8 @@ const jwt = require('jsonwebtoken');
 const verifyToken = require('../middleware/token.js');
 const sendMail = require('../utils/sendMail.js'); // ใช้ส่ง OTP
 const upload = require('../middleware/Image.js');
+const Donation = require('../models/Donation.js');
+const mongoose = require('mongoose');
 
 // Signup Route
 router.post("/signup", async (req, res) => {
@@ -378,5 +380,27 @@ router.put('/update-profile', verifyToken, async (req, res) => {
     res.status(500).json({ message: 'Server error.' });
   }
 });
+
+router.get('/history', verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const donations = await Donation.find({ user_id: userId }).populate('project_id', 'title goal');
+
+    if (!donations || donations.length === 0) {
+      return res.status(404).json({ message: 'No donations found for this user.' });
+    }
+
+    res.status(200).json({
+      message: 'Donation history fetched successfully.',
+      donations
+    });
+  } catch (error) {
+    console.error('Error fetching donation history:', error.message);
+    res.status(500).json({ message: 'Server error.' });
+  }
+});
+
+
 
 module.exports = router;
