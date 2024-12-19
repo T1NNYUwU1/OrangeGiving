@@ -11,12 +11,6 @@ const projectSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  organization: {
-    name: { type: String, required: true },
-    address: { type: String, required: true  },
-    contact: { type: String, required: true  },
-    email: { type: String, required: true  },
-  },
   total_donations: { // จำนวนเงินที่ระดมทุนได้จนถึงปัจจุบัน
     type: Number,
     default: 0

@@ -5,11 +5,10 @@ const verifyToken = require('../middleware/token.js')
 const upload = require('../middleware/Image.js');
 
 // Create a new project with multiple images
-router.post('/create', verifyToken, upload.single('images'), async (req, res) => {
+router.post('/create', verifyToken, upload.single('image'), async (req, res) => {
     try {
       const {
         title,
-        organization,
         goal,
         long_description,
       } = req.body;
@@ -17,7 +16,6 @@ router.post('/create', verifyToken, upload.single('images'), async (req, res) =>
       // ตรวจสอบว่าข้อมูลที่จำเป็นถูกส่งมาครบหรือไม่
       if (
         !title ||
-        !organization?.name ||
         !goal ||
         !long_description
       ) {
@@ -27,10 +25,13 @@ router.post('/create', verifyToken, upload.single('images'), async (req, res) =>
       // เก็บ path ของไฟล์รูปที่อัปโหลด
       const imagePath = req.file ? req.file.path.replace(/\\/g, '/') : null;
 
+      if (!imagePath) {
+        return res.status(400).json({ message: 'Image file is required' });
+      }
+
       // สร้างโปรเจกต์ใหม่
       const newProject = new Project({
         title,
-        organization,
         total_donations: 0,
         goal,
         long_description,
